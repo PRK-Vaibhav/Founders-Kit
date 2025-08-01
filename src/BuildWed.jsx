@@ -2,29 +2,24 @@ import React, { useState, useEffect } from 'react';
 // The react-icons library is no longer needed for the spinner
 // import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
-const API_KEY = 'AIzaSyA4RTNfhLTLBKYeeUckd6hsJxKFzYAnBsQ'; // This is correct for Create React App
+// const API_KEY = 'AIzaSyA4RTNfhLTLBKYeeUckd6hsJxKFzYAnBsQ'; // This is correct for Create React App
+const API_KEY = 'AIzaSyAnQS1euM8Nr1XTomlm0w0-zof3wBz-9eE'; // This is correct for Create React App
 
-const fetchWithExponentialBackoff = async (url, options, maxRetries = 5, delay = 1000) => {
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      const response = await fetch(url, options);
-      if (response.status === 429) {
-        if (i === maxRetries - 1) throw new Error("API request failed after multiple retries due to throttling.");
-        console.warn(`API call throttled. Retrying in ${delay}ms...`);
-        await new Promise(res => setTimeout(res, delay));
-        delay *= 2;
-      } else if (!response.ok) {
-        throw new Error(`API call failed with status: ${response.status}`);
-      }
-      return response;
-    } catch (error) {
-      if (i === maxRetries - 1) throw error;
-      console.error(`Attempt ${i + 1} failed: ${error}. Retrying...`);
-      await new Promise(res => setTimeout(res, delay));
+const fetchWithExponentialBackoff = async (url, options, retries = 5, delay = 1000) => {
+  for (let i = 0; i < retries; i++) {
+    const response = await fetch(url, options);
+
+    if (response.status === 429) {
+      console.warn(`API call throttled. Retrying in ${delay}ms...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
       delay *= 2;
+    } else {
+      return response;
     }
   }
+  throw new Error("Too many requests. Try again later.");
 };
+
 // showMessage function updated with Bootstrap alert classes
 const showMessage = (message, type = 'info') => {
     const messageBox = document.getElementById('message-box');
@@ -253,111 +248,111 @@ const WebsiteGenerator = () => {
    // In BuildWed.jsx
 
 const generateImage = async (prompt) => {
-    const response = await fetch('/api/generateImage', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ prompt: prompt }),
-    });
+  const payload = {
+    contents: [{ parts: [{ text: `Generate a realistic photo for: ${prompt}` }] }],
+  };
 
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Backend request failed');
-    }
+  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
 
-    const result = await response.json();
-    return `data:image/png;base64,${result.imageBase64}`;
+  const result = await response.json();
+  const base64 = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+  if (!base64?.startsWith('data:image')) {
+    throw new Error("Image generation failed or returned non-image content.");
+  }
+
+  return base64;
 };
+
+
+
+function extractFirstJsonObject(text) {
+  const jsonStart = text.indexOf('{');
+  const jsonEnd = text.lastIndexOf('}');
+  if (jsonStart === -1 || jsonEnd === -1 || jsonEnd <= jsonStart) {
+    throw new Error("No valid JSON object found.");
+  }
+  const jsonString = text.slice(jsonStart, jsonEnd + 1);
+  return JSON.parse(jsonString);
+}
 
 
     const generateWebsite = async (e) => {
-    e.preventDefault();
-    setView('loading');
+  e.preventDefault();
+  setView('loading');
+
+  try {
+    const textPrompt = `Generate a valid JSON object for a one-page website.
+      The business name is "${businessInfo.businessName}", the type is "${businessInfo.businessType}", and the description is: "${businessInfo.businessDescription}".
+      The JSON object must include:
+      {
+        "business_name": "",
+        "tagline": "",
+        "about_us_title": "",
+        "about_us_content": "",
+        "services_title": "",
+        "services_content": "",
+        "cta_text": ""
+      }
+      DO NOT add anything outside the JSON. DO NOT wrap in markdown like \`\`\`json. No SEO hashtags, no explanation. Just pure JSON.`;
+
+    const textPayload = {
+      contents: [{ parts: [{ text: textPrompt }] }],
+    };
+
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
+
+    const response = await fetchWithExponentialBackoff(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(textPayload),
+    });
+
+    const result = await response.json();
+    let rawText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!rawText) throw new Error("Empty response from AI.");
+
+    console.log("Attempting to parse JSON:", rawText);
+
+    let content;
     try {
-         // --- NEW, STRICTER PROMPT ---
-        const textPrompt = `Generate a valid JSON object for a one-page website.
-        The business name is "${businessInfo.businessName}", the type is "${businessInfo.businessType}", and the description is: "${businessInfo.businessDescription}".
-        The JSON object must have these exact keys and follow these rules:
-        - "business_name": The name of the business.
-        - "tagline": A short, catchy slogan for the business (under 15 words).
-        - "about_us_title": A title for the "About Us" section.
-        - "about_us_content": A concise paragraph describing the business (2-3 sentences).
-        - "services_title": A title for the "Services" section.
-        - "services_content": A list of 3-4 services, separated by newline characters (\\n).
-        - "cta_text": A short, compelling call-to-action phrase (under 10 words).
-        IMPORTANT RULE: Ensure any double quotes inside the JSON string values are properly escaped (e.g., "he said \\"hello\\"").`;
+      content = extractFirstJsonObject(rawText);
+    } catch (err) {
+      console.warn("Failed to parse directly, retrying fix...");
 
-        const textPayload = {
-            contents: [{ parts: [{ text: textPrompt }] }],
-            generationConfig: {
-                responseMimeType: 'application/json',
-                responseSchema: {
-                    type: 'OBJECT',
-                    properties: {
-                        business_name: { type: 'STRING' },
-                        tagline: { type: 'STRING' },
-                        about_us_title: { type: 'STRING' },
-                        about_us_content: { type: 'STRING' },
-                        services_title: { type: 'STRING' },
-                        services_content: { type: 'STRING' },
-                        cta_text: { type: 'STRING' },
-                    },
-                },
-            },
-        };
+      const fixPrompt = `Fix this broken JSON and return only clean JSON object:\n${rawText}`;
+      const fixPayload = { contents: [{ parts: [{ text: fixPrompt }] }] };
 
-        const textApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${API_KEY}`;
-        const textResponse = await fetchWithExponentialBackoff(textApiUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(textPayload),
-        });
+      const fixResponse = await fetchWithExponentialBackoff(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fixPayload),
+      });
 
-        const textResult = await textResponse.json();
-
-        // --- NEW ROBUST PARSING LOGIC ---
-        let content;
-        const rawText = textResult.candidates[0].content.parts[0].text;
-
-        try {
-            // First attempt to parse the JSON
-            console.log("Attempting to parse JSON:", rawText);
-            content = JSON.parse(rawText);
-        } catch (parseError) {
-            console.error("Initial JSON parse failed. AI returned:", rawText);
-            console.log("Attempting to self-heal the broken JSON...");
-            
-            // If it fails, ask the AI to fix it
-            const fixJsonPrompt = `The following text is broken JSON. Please fix it and return only the valid JSON object, with no extra text or commentary. Broken JSON: ${rawText}`;
-            
-            const fixPayload = { contents: [{ parts: [{ text: fixJsonPrompt }] }] };
-
-            const fixResponse = await fetchWithExponentialBackoff(textApiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(fixPayload),
-            });
-
-            const fixedResult = await fixResponse.json();
-            // Try parsing the fixed response
-            content = JSON.parse(fixedResult.candidates[0].content.parts[0].text);
-        }
-        // --- END OF NEW LOGIC ---
-
-        setWebsiteContent(content);
-
-        const imagePrompt = `A professional, high-quality photograph of a storefront or product related to a "${businessInfo.businessType}" business. The image should be warm, inviting, and professional, and should feature the name "${businessInfo.businessName}" prominently on the facade or within the scene. Use a modern, appealing aesthetic. The name should be easily readable.`;
-        const imageUrl = await generateImage(imagePrompt);
-        setHeroImage(imageUrl);
-
-        setView('website');
-    } catch (error) {
-        console.error('Website generation failed:', error);
-        showMessage('An error occurred during website generation. Please try again.', 'error');
-        setView('questionnaire');
+      const fixedResult = await fixResponse.json();
+      let fixedText = fixedResult?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+      content = extractFirstJsonObject(fixedText);
     }
+
+    setWebsiteContent(content);
+
+    const imagePrompt = `A professional, aesthetic photo representing a "${businessInfo.businessType}" business named "${businessInfo.businessName}".`;
+    const imageUrl = await generateImage(imagePrompt);
+    setHeroImage(imageUrl);
+    setView('website');
+  } catch (error) {
+    console.error('Website generation failed:', error);
+    showMessage('Website generation failed. Please try again.', 'error');
+    setView('questionnaire');
+  }
 };
+
+
 
     const generateNewImage = async () => {
     if (isImageGenerating) return;

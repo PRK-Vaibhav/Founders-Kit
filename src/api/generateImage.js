@@ -1,4 +1,4 @@
-const { PredictionServiceClient } = require('@google-cloud/aiplatform');
+import { PredictionServiceClient } from '@google-cloud/aiplatform';
 
 // Use an environment variable for the Project ID
 const PROJECT_ID = process.env.GCP_PROJECT_ID; 
