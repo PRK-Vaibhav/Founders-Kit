@@ -74,18 +74,6 @@ const featuresData = [
     title: 'AI Customer Support',
     description: 'Deploy intelligent chatbots that handle customer queries 24/7, improving satisfaction and reducing support costs.',
     items: ['Natural language processing', 'Multi-language support', 'Seamless handoff to Humans']
-  },
-  {
-    icon: <ChartIcon />,
-    title: 'Customer Intelligence',
-    description: 'Automatically analyze customer feedback to identify sentiment, trending themes, and actionable insights for business growth.',
-    items: ['Sentiment analysis', 'Trend identification', 'Actionable recommendations']
-  },
-  {
-    icon: <SettingsIcon />,
-    title: 'Unified Platform',
-    description: 'Everything works together seamlessly. One platform, unlimited possibilities for growing and scaling your business.',
-    items: ['Integrated workflows', 'Single dashboard', 'Advanced analytics']
   }
 ];
 
@@ -101,6 +89,8 @@ function Features() {
              onClick={() => {
               if (index === 0) navigate('/BuildWed');
               else if (index === 2) navigate('/Image');
+              else if (index === 1) navigate('/Email');
+              else if (index === 3) navigate('/ChatAi');
             }}
             style={(index === 0 || index === 2) ? { cursor: 'pointer' } : {}}
           >

@@ -7,6 +7,9 @@ import Hero from './Title.jsx';
 import BusinessGrowthSection from './BussinessGrowth.jsx';
 import Footer from './Footer.jsx';
 import Image from './Image.jsx';
+import Email from './Email.jsx';
+import About from './About.jsx';
+import ChatAi from './ChatAi.jsx'; // Assuming you have a ChatAi component
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
@@ -28,7 +31,10 @@ function App() {
             } 
           />
           <Route path="/BuildWed" element={<Web />} />
+          <Route path="/About" element={<About />} />
+          <Route path="/ChatAi" element={<ChatAi />} />     
           <Route path="/Image" element={<Image />} />
+          <Route path="/Email" element={<Email />} />
         </Routes>
       </main>
       <Footer />

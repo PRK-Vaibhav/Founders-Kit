@@ -15,47 +15,39 @@ const handleGenerate = useCallback(async () => {
   setIsLoading(true);
 
   let fullPrompt = prompt.trim();
-  if (businessName.trim()) {
-    fullPrompt = `A high-quality, high-definition image for a business named "${businessName.trim()}". The image should be ${prompt.trim()}.`;
-  } else {
-    fullPrompt = `A high-quality, high-definition image of ${prompt.trim()}.`;
-  }
-
   if (!prompt.trim()) {
     setError('Please enter an image description.');
     setIsLoading(false);
     return;
   }
 
+  if (businessName.trim()) {
+    fullPrompt = `A high-quality, high-definition image for a business named "${businessName.trim()}". The image should be ${prompt.trim()}.`;
+  } else {
+    fullPrompt = `A high-quality, high-definition image of ${prompt.trim()}.`;
+  }
+
   try {
-    const response = await fetch('/api/generateImage', {
+    const response = await fetch('http://localhost:5000/generateImage', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt: fullPrompt }),
     });
 
-    // If the response is not OK, handle the error without crashing
-    if (!response.ok) {
-      let errorText = `The backend returned a ${response.status} error.`;
-      // Try to get a more specific error message from the response body
-      try {
-        const errorData = await response.json();
-        errorText = errorData.error || errorText;
-      } catch (e) {
-        // The error response was not JSON, use the status text instead
-        errorText = response.statusText;
-      }
-      throw new Error(errorText);
-    }
-
-    // If the response is OK, parse the successful JSON result
     const result = await response.json();
 
-    if (result.imageBase64) {
+    if (!response.ok) {
+      throw new Error(result.error || `HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    // Optional: log result
+    console.log('Received imageBase64 length:', result.imageBase64?.length);
+
+    if (result.imageBase64 && result.imageBase64.startsWith('iVBOR')) {
       const url = `data:image/png;base64,${result.imageBase64}`;
       setImageUrl(url);
     } else {
-      throw new Error('Failed to retrieve image data from the API response.');
+      throw new Error('Received invalid or corrupt image data.');
     }
   } catch (err) {
     console.error("Failed to generate image:", err);
@@ -64,6 +56,7 @@ const handleGenerate = useCallback(async () => {
     setIsLoading(false);
   }
 }, [businessName, prompt]);
+
 
   return (
     <div className="min-vh-100 bg-dark text-white d-flex align-items-center justify-content-center p-4">

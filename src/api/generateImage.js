@@ -1,7 +1,6 @@
 import { PredictionServiceClient } from '@google-cloud/aiplatform';
 
-// Use an environment variable for the Project ID
-const PROJECT_ID = process.env.GCP_PROJECT_ID; 
+const PROJECT_ID = process.env.GCP_PROJECT_ID;
 const REGION = 'us-central1';
 
 const clientOptions = {
@@ -21,6 +20,7 @@ export default async function handler(req, res) {
   }
 
   const endpoint = `projects/${PROJECT_ID}/locations/${REGION}/publishers/google/models/imagen@2.0.0`;
+
   const request = {
     endpoint,
     instances: [{ prompt }],
@@ -29,7 +29,17 @@ export default async function handler(req, res) {
 
   try {
     const [response] = await predictionServiceClient.predict(request);
-    const imageBase64 = response.predictions[0].structValue.fields.bytesBase64Encoded.stringValue;
+
+    // Debug log
+    console.log('Full response:', JSON.stringify(response, null, 2));
+
+    const prediction = response.predictions?.[0];
+    const imageBase64 = prediction?.structValue?.fields?.bytesBase64Encoded?.stringValue;
+
+    if (!imageBase64 || typeof imageBase64 !== 'string') {
+      return res.status(500).json({ error: 'Invalid image data from Vertex AI.' });
+    }
+
     return res.status(200).json({ imageBase64 });
   } catch (error) {
     console.error('Error calling Vertex AI:', error);
