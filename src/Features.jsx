@@ -98,8 +98,11 @@ function Features() {
           <div 
             key={index} 
             className="feature-card" 
-            onClick={() => navigate('/BuildWed')}
-            // Add a style to your CSS for .feature-card:hover to show it's clickable
+             onClick={() => {
+              if (index === 0) navigate('/BuildWed');
+              else if (index === 2) navigate('/Image');
+            }}
+            style={(index === 0 || index === 2) ? { cursor: 'pointer' } : {}}
           >
             <div className="feature-card-icon-wrapper">
               {feature.icon}

@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react';
 // import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
 // const API_KEY = 'AIzaSyA4RTNfhLTLBKYeeUckd6hsJxKFzYAnBsQ'; // This is correct for Create React App
-const API_KEY = 'AIzaSyAnQS1euM8Nr1XTomlm0w0-zof3wBz-9eE'; // This is correct for Create React App
+// const API_KEY = 'AIzaSyAnQS1euM8Nr1XTomlm0w0-zof3wBz-9eE';
+const API_KEY = 'AIzaSyBTS3i39Ul5Usikhf94fNf-ZZbfhyjLDB8'; // This is correct for Create React App
 
 const fetchWithExponentialBackoff = async (url, options, retries = 5, delay = 1000) => {
   for (let i = 0; i < retries; i++) {
@@ -259,14 +260,16 @@ const generateImage = async (prompt) => {
   });
 
   const result = await response.json();
-  const base64 = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+  const base64 = result?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
 
-  if (!base64?.startsWith('data:image')) {
-    throw new Error("Image generation failed or returned non-image content.");
+  if (!base64.startsWith('data:image')) {
+    console.warn("Fallback: Using placeholder image due to invalid response.");
+    return 'https://via.placeholder.com/800x400.png?text=AI+Image+Unavailable';
   }
 
   return base64;
 };
+
 
 
 
@@ -449,12 +452,7 @@ function extractFirstJsonObject(text) {
                                     <EditableSection title={websiteContent.services_title} content={websiteContent.services_content} type="list" onSave={(newContent) => handleEditSave('services_content', newContent)} />
                                 </div>
 
-                                <div className="p-5 text-center bg-primary text-white">
-                                    <p className="display-6 fw-bold mb-4">{websiteContent.cta_text}</p>
-                                    <button className="btn btn-light btn-lg text-primary fw-bold rounded-pill px-5 py-3">Contact Us</button>
-                                </div>
-
-                                <MarketingTools businessName={websiteContent.business_name} />
+                                
                             </div>
                         </div>
                         <div className="text-center mt-4">

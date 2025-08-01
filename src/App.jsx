@@ -6,6 +6,7 @@ import Header from './Header.jsx';
 import Hero from './Title.jsx';
 import BusinessGrowthSection from './BussinessGrowth.jsx';
 import Footer from './Footer.jsx';
+import Image from './Image.jsx';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
             } 
           />
           <Route path="/BuildWed" element={<Web />} />
+          <Route path="/Image" element={<Image />} />
         </Routes>
       </main>
       <Footer />

@@ -267,3 +267,32 @@ main {
     grid-template-columns: 1fr;
   }
 }
+
+.text-gradient {
+  background: linear-gradient(to right, #9333ea, #ec4899);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.btn-gradient-primary {
+  background: linear-gradient(to right, #9333ea, #db2777);
+  border: none;
+  color: white;
+}
+
+.btn-gradient-primary:hover {
+  background: linear-gradient(to right, #7e22ce, #be185d);
+  color: white;
+}
+
+.btn-gradient-secondary {
+    background: linear-gradient(to right, #2563eb, #0891b2);
+    border: none;
+    color: white;
+}
+
+.btn-gradient-secondary:hover {
+    background: linear-gradient(to right, #1d4ed8, #0e7490);
+    color: white;
+}
