@@ -250,35 +250,24 @@ const WebsiteGenerator = () => {
     setBusinessInfo(prev => ({ ...prev, [name]: value }));
   };
 
-    const generateImage = async (prompt) => {
-    // IMPORTANT: Replace 'your-gcp-project-id' with your actual Google Cloud Project ID.
-    const YOUR_PROJECT_ID = 'your-gcp-project-id'; 
+   // In BuildWed.jsx
 
-    const imagePayload = {
-      instances: [{ prompt: prompt }],
-      parameters: { "sampleCount": 1 }
-    };
-
-    // This is the CORRECT URL for the Imagen model via Vertex AI
-    const imageApiUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${YOUR_PROJECT_ID}/locations/us-central1/publishers/google/models/imagen-2-0:predict`;
-
-    const imageResponse = await fetchWithExponentialBackoff(imageApiUrl, {
+const generateImage = async (prompt) => {
+    const response = await fetch('/api/generateImage', {
       method: 'POST',
       headers: {
-        // You need an OAuth token for Vertex AI, not just an API Key in the header.
-        // For simplicity in this example, we assume the API key has the right permissions.
-        // In a production app, you would use 'gcloud auth print-access-token'.
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(imagePayload)
+      body: JSON.stringify({ prompt: prompt }),
     });
 
-    const imageResult = await imageResponse.json();
-    if (imageResult.error) {
-        // Handle cases where the API returns an error object
-        throw new Error(imageResult.error.message);
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Backend request failed');
     }
-    return `data:image/png;base64,${imageResult.predictions[0].bytesBase64Encoded}`;
+
+    const result = await response.json();
+    return `data:image/png;base64,${result.imageBase64}`;
 };
 
 
