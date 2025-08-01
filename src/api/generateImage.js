@@ -1,7 +1,7 @@
 const { PredictionServiceClient } = require('@google-cloud/aiplatform');
 
-// Your Google Cloud Project ID and Region
-const PROJECT_ID = '381867178157'; 
+// Use an environment variable for the Project ID
+const PROJECT_ID = process.env.GCP_PROJECT_ID; 
 const REGION = 'us-central1';
 
 const clientOptions = {
