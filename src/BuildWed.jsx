@@ -311,6 +311,7 @@ const generateImage = async (prompt) => {
 
         try {
             // First attempt to parse the JSON
+            console.log("Attempting to parse JSON:", rawText);
             content = JSON.parse(rawText);
         } catch (parseError) {
             console.error("Initial JSON parse failed. AI returned:", rawText);
