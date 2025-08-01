@@ -307,7 +307,7 @@ const generateImage = async (prompt) => {
             },
         };
 
-        const textApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`;
+        const textApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${API_KEY}`;
         const textResponse = await fetchWithExponentialBackoff(textApiUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
