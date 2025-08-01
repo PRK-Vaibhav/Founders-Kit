@@ -275,49 +275,77 @@ const generateImage = async (prompt) => {
     e.preventDefault();
     setView('loading');
     try {
-      const textPrompt = `Generate a JSON object for a one-page website for a business. The JSON should have keys: "business_name", "tagline", "about_us_title", "about_us_content", "services_title", "services_content", and "cta_text". The website is for a business named "${businessInfo.businessName}" which is a "${businessInfo.businessType}". Its description is: "${businessInfo.businessDescription}". The content should be professional, friendly, and engaging. The services_content should be a list of 3-4 bullet points.`;
+        const textPrompt = `Generate a JSON object for a one-page website for a business. The JSON should have keys: "business_name", "tagline", "about_us_title", "about_us_content", "services_title", "services_content", and "cta_text". The website is for a business named "${businessInfo.businessName}" which is a "${businessInfo.businessType}". Its description is: "${businessInfo.businessDescription}". The content should be professional, friendly, and engaging. The services_content should be a list of 3-4 bullet points.`;
 
-      const textPayload = {
-        contents: [{ parts: [{ text: textPrompt }] }],
-        generationConfig: {
-          responseMimeType: 'application/json',
-          responseSchema: {
-            type: 'OBJECT',
-            properties: {
-              business_name: { type: 'STRING' },
-              tagline: { type: 'STRING' },
-              about_us_title: { type: 'STRING' },
-              about_us_content: { type: 'STRING' },
-              services_title: { type: 'STRING' },
-              services_content: { type: 'STRING' },
-              cta_text: { type: 'STRING' },
+        const textPayload = {
+            contents: [{ parts: [{ text: textPrompt }] }],
+            generationConfig: {
+                responseMimeType: 'application/json',
+                responseSchema: {
+                    type: 'OBJECT',
+                    properties: {
+                        business_name: { type: 'STRING' },
+                        tagline: { type: 'STRING' },
+                        about_us_title: { type: 'STRING' },
+                        about_us_content: { type: 'STRING' },
+                        services_title: { type: 'STRING' },
+                        services_content: { type: 'STRING' },
+                        cta_text: { type: 'STRING' },
+                    },
+                },
             },
-          },
-        },
-      };
+        };
 
-       const textApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`;
-      const textResponse = await fetchWithExponentialBackoff(textApiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(textPayload),
-      });
+        const textApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`;
+        const textResponse = await fetchWithExponentialBackoff(textApiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(textPayload),
+        });
 
-      const textResult = await textResponse.json();
-      const content = JSON.parse(textResult.candidates[0].content.parts[0].text);
-      setWebsiteContent(content);
+        const textResult = await textResponse.json();
 
-      const imagePrompt = `A professional, high-quality photograph of a storefront or product related to a "${businessInfo.businessType}" business. The image should be warm, inviting, and professional, and should feature the name "${businessInfo.businessName}" prominently on the facade or within the scene. Use a modern, appealing aesthetic. The name should be easily readable.`;
-      const imageUrl = await generateImage(imagePrompt);
-      setHeroImage(imageUrl);
+        // --- NEW ROBUST PARSING LOGIC ---
+        let content;
+        const rawText = textResult.candidates[0].content.parts[0].text;
 
-      setView('website');
+        try {
+            // First attempt to parse the JSON
+            content = JSON.parse(rawText);
+        } catch (parseError) {
+            console.error("Initial JSON parse failed. AI returned:", rawText);
+            console.log("Attempting to self-heal the broken JSON...");
+            
+            // If it fails, ask the AI to fix it
+            const fixJsonPrompt = `The following text is broken JSON. Please fix it and return only the valid JSON object, with no extra text or commentary. Broken JSON: ${rawText}`;
+            
+            const fixPayload = { contents: [{ parts: [{ text: fixJsonPrompt }] }] };
+
+            const fixResponse = await fetchWithExponentialBackoff(textApiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(fixPayload),
+            });
+
+            const fixedResult = await fixResponse.json();
+            // Try parsing the fixed response
+            content = JSON.parse(fixedResult.candidates[0].content.parts[0].text);
+        }
+        // --- END OF NEW LOGIC ---
+
+        setWebsiteContent(content);
+
+        const imagePrompt = `A professional, high-quality photograph of a storefront or product related to a "${businessInfo.businessType}" business. The image should be warm, inviting, and professional, and should feature the name "${businessInfo.businessName}" prominently on the facade or within the scene. Use a modern, appealing aesthetic. The name should be easily readable.`;
+        const imageUrl = await generateImage(imagePrompt);
+        setHeroImage(imageUrl);
+
+        setView('website');
     } catch (error) {
-      console.error('Website generation failed:', error);
-      showMessage('An error occurred during website generation. Please try again.', 'error');
-      setView('questionnaire');
+        console.error('Website generation failed:', error);
+        showMessage('An error occurred during website generation. Please try again.', 'error');
+        setView('questionnaire');
     }
-  };
+};
 
     const generateNewImage = async () => {
     if (isImageGenerating) return;
