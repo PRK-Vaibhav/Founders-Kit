@@ -275,7 +275,18 @@ const generateImage = async (prompt) => {
     e.preventDefault();
     setView('loading');
     try {
-        const textPrompt = `Generate a JSON object for a one-page website for a business. The JSON should have keys: "business_name", "tagline", "about_us_title", "about_us_content", "services_title", "services_content", and "cta_text". The website is for a business named "${businessInfo.businessName}" which is a "${businessInfo.businessType}". Its description is: "${businessInfo.businessDescription}". The content should be professional, friendly, and engaging. The services_content should be a list of 3-4 bullet points.`;
+         // --- NEW, STRICTER PROMPT ---
+        const textPrompt = `Generate a valid JSON object for a one-page website.
+        The business name is "${businessInfo.businessName}", the type is "${businessInfo.businessType}", and the description is: "${businessInfo.businessDescription}".
+        The JSON object must have these exact keys and follow these rules:
+        - "business_name": The name of the business.
+        - "tagline": A short, catchy slogan for the business (under 15 words).
+        - "about_us_title": A title for the "About Us" section.
+        - "about_us_content": A concise paragraph describing the business (2-3 sentences).
+        - "services_title": A title for the "Services" section.
+        - "services_content": A list of 3-4 services, separated by newline characters (\\n).
+        - "cta_text": A short, compelling call-to-action phrase (under 10 words).
+        IMPORTANT RULE: Ensure any double quotes inside the JSON string values are properly escaped (e.g., "he said \\"hello\\"").`;
 
         const textPayload = {
             contents: [{ parts: [{ text: textPrompt }] }],
@@ -296,7 +307,7 @@ const generateImage = async (prompt) => {
             },
         };
 
-        const textApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-latest:generateContent?key=${API_KEY}`;
+        const textApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`;
         const textResponse = await fetchWithExponentialBackoff(textApiUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
