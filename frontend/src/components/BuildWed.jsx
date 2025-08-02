@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 
 // const API_KEY = 'AIzaSyA4RTNfhLTLBKYeeUckd6hsJxKFzYAnBsQ'; // This is correct for Create React App
 // const API_KEY = 'AIzaSyAnQS1euM8Nr1XTomlm0w0-zof3wBz-9eE';
-const API_KEY = 'AIzaSyBTS3i39Ul5Usikhf94fNf-ZZbfhyjLDB8'; // This is correct for Create React App
+const API_KEY = 'f566d4747e814df4a717e89c2f2dc5a8'; // This is correct for Create React App
 
 const fetchWithExponentialBackoff = async (url, options, retries = 5, delay = 1000) => {
   for (let i = 0; i < retries; i++) {

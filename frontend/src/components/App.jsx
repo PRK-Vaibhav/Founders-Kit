@@ -13,6 +13,7 @@ import ChatAi from './ChatAi.jsx';
 import Login from './Login.jsx';
 import Register from './register.jsx';
 import Logo from './Logo.jsx';
+import Blog from './Blog.jsx';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
           />
           <Route path="/BuildWed" element={<Web />} />
           <Route path="/Login" element={<Login />} />
+          <Route path = "/Blog" element={<Blog />} />
           <Route path="/Logo" element={<Logo />} />
           <Route path="/Register" element={<Register />} />
           <Route path="/About" element={<About />} />

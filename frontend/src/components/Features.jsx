@@ -41,6 +41,14 @@ const DesignIcon = () => (
     <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
   </svg>
 );
+const BlogIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feature-icon">
+    <path d="M12 20h9"></path>
+    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+    <path d="M4 15h7"></path>
+    <path d="M4 11h9"></path>
+  </svg>
+);
 
 const SettingsIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feature-icon">
@@ -82,11 +90,17 @@ const featuresData = [
     items: ['Natural language processing', 'Multi-language support', 'Seamless handoff to Humans']
   },
   {
-    icon: <DesignIcon />,
-    title: 'Logo Generator',
-    description: 'Deploy intelligent chatbots that handle customer queries 24/7, improving satisfaction and reducing support costs.',
-    items: ['Natural language processing', 'Multi-language support', 'Seamless handoff to Humans']
-  }
+  icon: <DesignIcon />,
+  title: 'AI Logo Generator',
+  description: 'Instantly generate memorable logos to build your brand identity. Describe your vision, and our AI will create custom designs tailored to your business.',
+  items: ['Unique, royalty-free designs', 'Customizable color palettes', 'High-resolution formats']
+},
+{
+  icon: <BlogIcon />,
+  title: 'AI Blog Writer',
+  description: 'Generate high-quality, SEO-friendly blog posts and articles in minutes. Overcome writer\'s block and keep your content fresh and engaging.',
+  items: ['Topic idea generation', 'SEO keyword optimization', 'Multiple writing tones']
+}
 ];
 
 function Features() {
@@ -104,6 +118,7 @@ function Features() {
               else if (index === 1) navigate('/Email');
               else if (index === 3) navigate('/ChatAi');
               else if (index === 4) navigate('/Logo');
+              else if (index === 5) navigate('/Blog');
             }}
             style={(index === 0 || index === 2) ? { cursor: 'pointer' } : {}}
           >
