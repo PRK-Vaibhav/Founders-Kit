@@ -71,7 +71,7 @@ const featuresData = [
   },
   {
     icon: <MessageIcon />,
-    title: 'AI Customer Support',
+    title: 'AI Support',
     description: 'Deploy intelligent chatbots that handle customer queries 24/7, improving satisfaction and reducing support costs.',
     items: ['Natural language processing', 'Multi-language support', 'Seamless handoff to Humans']
   }
