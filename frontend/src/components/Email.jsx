@@ -103,7 +103,7 @@ export default function Email() {
     try {
       const chatHistory = [{ role: 'user', parts: [{ text: prompt }] }];
       const payload = { contents: chatHistory };
-      const apiKey = 54545017; // <<-- REMEMBER TO REPLACE THIS
+      const apiKey = 'AIzaSyC1fJX3VJlyF5galObc0vYmFbbtW3rCkTs'; // <<-- REMEMBER TO REPLACE THIS
       const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
       const response = await fetch(apiUrl, {
@@ -177,16 +177,17 @@ export default function Email() {
               placeholder="e.g., https://www.yourbusiness.com"
             />
           </div>
-          <div>
-            <label className="form-label fw-bold">Contact Information (Optional)</label>
-            <textarea
-              rows="2"
-              value={contactInfo}
-              onChange={(e) => setContactInfo(e.target.value)}
-              className="form-control form-control-lg"
-              placeholder="e.g., 123 Main St, Anytown | (555) 123-4567"
-            />
-          </div>
+         <div>
+  <label className="form-label fw-bold small">Contact Information (Optional)</label>
+  <textarea
+    rows="2"
+    value={contactInfo}
+    onChange={(e) => setContactInfo(e.target.value)}
+    className="form-control form-control-sm"
+    placeholder="e.g., 123 Main St, Anytown | (555) 123-4567"
+  />
+</div>
+
           <div>
             <label className="form-label fw-bold">Email Topic</label>
             <input
@@ -290,11 +291,20 @@ export default function Email() {
           {generatedEmail && (
             <div className="card mt-4 p-4 bg-light">
               <h3 className="h5 fw-bold mb-3">Drafted Email Preview:</h3>
-              <div className="card card-body bg-white border-secondary">
-                <pre className="m-0" style={{ whiteSpace: 'pre-wrap' }}>
-                  <ReactMarkdown>{generatedEmail}</ReactMarkdown>
-                </pre>
-              </div>
+             <div className="card card-body bg-white border-secondary">
+                <pre
+                className="m-0"
+                style={{
+                whiteSpace: 'pre-wrap',
+                fontSize: '1.25rem',       // Increased font size (~20px)
+                lineHeight: '1.8',
+                fontFamily: 'inherit',
+                color: '#333',
+                }}>
+    <ReactMarkdown>{generatedEmail}</ReactMarkdown>
+  </pre>
+</div>
+
             </div>
           )}
         </div>

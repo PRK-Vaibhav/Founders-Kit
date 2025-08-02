@@ -114,31 +114,42 @@ const App = () => {
 
   return (
     // Main container
-    <div className="d-flex flex-column vh-100 bg-dark text-light p-3">
+    <div className="d-flex flex-column align-items-center justify-content-center vh-100 bg-dark text-light p-2">
+      <div className="w-100" style={{ maxWidth: '900px', height: '500px' }}>
+
+
       {/* Chat window */}
-      <div className="d-flex flex-column flex-grow-1 container bg-light bg-opacity-10 rounded shadow-lg overflow-hidden p-0">
+      <div className="d-flex flex-column h-100 bg-light bg-opacity-10 rounded shadow-lg overflow-hidden p-0">
+
         {/* Header */}
         <header className="p-3 bg-primary text-white text-center h5">
           FK ChatBot
         </header>
 
         {/* Chat History Container */}
-        <div ref={chatContainerRef} className="flex-grow-1 overflow-y-auto p-3">
+        <div
+  ref={chatContainerRef}
+  className="flex-grow-1 overflow-y-auto p-2"
+  style={{ minHeight: '250px', maxHeight: '350px' }}
+>
+
           {chatHistory.map((message, index) => (
             <div
               key={index}
               className={`d-flex mb-3 ${message.role === 'user' ? 'justify-content-end' : 'justify-content-start'}`}
             >
               <div
-                className={`p-3 rounded shadow-sm ${
-                  message.role === 'user'
-                    ? 'bg-primary text-white'
-                    : 'bg-secondary text-white'
-                }`}
-                style={{ maxWidth: '75%' }}
-              >
-                <span>{message.text}</span>
-              </div>
+  className={`p-2 rounded shadow-sm ${
+    message.role === 'user'
+      ? 'bg-primary text-white'
+      : 'bg-secondary text-white'
+  }`}
+    style={{ maxWidth: '90%', fontSize: '0.95rem', lineHeight: '1.4' }}
+
+>
+  <span>{message.text}</span>
+</div>
+
             </div>
           ))}
           {/* Loading indicator */}
@@ -146,7 +157,8 @@ const App = () => {
             <div className="d-flex justify-content-start mb-3">
               <div className="p-3 rounded shadow-sm bg-secondary" style={{ maxWidth: '75%' }}>
                 <div className="placeholder-glow">
-                  <span className="placeholder col-12"></span>
+                  <span className="placeholder col-8"></span>
+
                 </div>
               </div>
             </div>
@@ -154,16 +166,18 @@ const App = () => {
         </div>
 
         {/* User Input Form */}
-        <footer className="p-3 border-top border-secondary">
+       <footer className="p-2 border-top border-secondary">
           <form onSubmit={handleSendMessage} className="d-flex align-items-center">
             <input
-              type="text"
-              value={userInput}
-              onChange={(e) => setUserInput(e.target.value)}
-              placeholder="Type your message here..."
-              className="form-control rounded-pill me-2 bg-dark text-light border-secondary"
-              disabled={loadingChat}
-            />
+  type="text"
+  value={userInput}
+  onChange={(e) => setUserInput(e.target.value)}
+  placeholder="Type your message here..."
+  className="form-control rounded-pill me-2 bg-dark text-light border-secondary"
+  style={{ fontSize: '0.9rem', padding: '0.4rem 1rem' }}
+  disabled={loadingChat}
+/>
+
             <button
               type="submit"
               className="btn btn-primary rounded-circle p-2"
@@ -180,6 +194,7 @@ const App = () => {
 
       {/* Error Modal */}
       <ErrorModal message={error} onClose={() => setError(null)} />
+    </div>
     </div>
   );
 };
