@@ -12,6 +12,7 @@ import About from './About.jsx';
 import ChatAi from './ChatAi.jsx'; 
 import Login from './Login.jsx';
 import Register from './register.jsx';
+import Logo from './Logo.jsx';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
           />
           <Route path="/BuildWed" element={<Web />} />
           <Route path="/Login" element={<Login />} />
+          <Route path="/Logo" element={<Logo />} />
           <Route path="/Register" element={<Register />} />
           <Route path="/About" element={<About />} />
           <Route path="/ChatAi" element={<ChatAi />} />     

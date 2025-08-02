@@ -35,6 +35,12 @@ const ChartIcon = () => (
         <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path>
     </svg>
 );
+const DesignIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feature-icon">
+    <path d="M12 20h9"></path>
+    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+  </svg>
+);
 
 const SettingsIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feature-icon">
@@ -74,6 +80,12 @@ const featuresData = [
     title: 'AI Support',
     description: 'Deploy intelligent chatbots that handle customer queries 24/7, improving satisfaction and reducing support costs.',
     items: ['Natural language processing', 'Multi-language support', 'Seamless handoff to Humans']
+  },
+  {
+    icon: <DesignIcon />,
+    title: 'Logo Generator',
+    description: 'Deploy intelligent chatbots that handle customer queries 24/7, improving satisfaction and reducing support costs.',
+    items: ['Natural language processing', 'Multi-language support', 'Seamless handoff to Humans']
   }
 ];
 
@@ -91,6 +103,7 @@ function Features() {
               else if (index === 2) navigate('/Image');
               else if (index === 1) navigate('/Email');
               else if (index === 3) navigate('/ChatAi');
+              else if (index === 4) navigate('/Logo');
             }}
             style={(index === 0 || index === 2) ? { cursor: 'pointer' } : {}}
           >
