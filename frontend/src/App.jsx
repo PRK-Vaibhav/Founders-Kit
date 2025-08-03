@@ -1,5 +1,5 @@
 import React from 'react';
-import './App.css'; // Assuming you have a CSS file for styles
+import './components/App.css'; // Assuming you have a CSS file for styles
 import Web from './components/BuildWed.jsx';
 import Features from './components/Features.jsx';
 import Header from './components/Header.jsx';
